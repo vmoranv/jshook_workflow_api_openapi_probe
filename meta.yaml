@@ -1,0 +1,6 @@
+name: api-openapi-probe
+description: JSHook workflow for api-openapi-probe
+author: vmoranv
+tags:
+  - workflow
+  - api-openapi-probe
