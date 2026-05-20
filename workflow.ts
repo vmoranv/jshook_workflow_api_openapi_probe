@@ -1,13 +1,14 @@
 import {
-  createWorkflow,
+  defineWorkflow,
+  sequenceStep,
   type WorkflowExecutionContext,
-  SequenceNodeBuilder,
 } from '@jshookmcp/extension-sdk/workflow';
 
 const workflowId = 'workflow.api-openapi-probe.v1';
 
-export default createWorkflow(workflowId, 'OpenAPI Probe Batch')
-  .description('Probe standard API docs/openapi paths in one burst.')
+export default defineWorkflow(workflowId, 'OpenAPI Probe Batch', (workflow) =>
+  workflow
+.description('Probe standard API docs/openapi paths in one burst.')
   .tags(['workflow', 'api', 'openapi', 'probe'])
   .timeoutMs(2 * 60_000)
   .defaultMaxConcurrency(1)
@@ -15,7 +16,7 @@ export default createWorkflow(workflowId, 'OpenAPI Probe Batch')
     const baseUrl = ctx.getConfig('workflows.apiProbe.baseUrl', '');
     if (!baseUrl) throw new Error('[workflow.api-openapi-probe] Missing required config: workflows.apiProbe.baseUrl');
 
-    const root = new SequenceNodeBuilder('api-openapi-probe-root');
+    return sequenceStep('api-openapi-probe-root', (root) => {
 
     root.tool('probe-openapi-paths', 'api_probe_batch', {
       input: {
@@ -35,6 +36,6 @@ export default createWorkflow(workflowId, 'OpenAPI Probe Batch')
       },
     });
 
-    return root;
+    });
   })
-  .build();
+  );
